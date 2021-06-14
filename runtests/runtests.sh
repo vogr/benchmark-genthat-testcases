@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 set -u
 
+
+
 CWD="$(dirname "$(readlink -f "$0")")"
 cd "$CWD" || exit 1
 
 export R_LIBS="$HOME/.Renv/versions/3.6.2/lib/R/library"
+
+export N_BENCHMARKS=100
 
 
 process_test() {
@@ -30,30 +34,29 @@ process_test() {
     cd "$DEST" &&
 
     # Run the file:
-    #   with R (for benchmark) x10
-    #   with Rjr (for benchmark) x10
+    #   with R (for benchmark) x N_BENCHMARKS
+    #   with Rjr (for benchmark) x N_BENCHMARKS
     #   with Rmr (for context logging)
 
     printf "  + benchmark R...\n"
     mkdir -p bench-R &&
     (
-      for i in {1..10}; do
+      for ((i=1 ; i <= N_BENCHMARKS; i++)); do
         Rscript "$TEST" "bench-R/bench-$i.RDS" || break
       done
     ) > R.log 2>&1
 
     printf "  + benchmark Rsh...\n"
-    mkdir -p bench-R &&
     mkdir -p bench-Rsh &&
     (
-      for i in {1..10}; do
+      for ((i=1 ; i <= N_BENCHMARKS; i++)); do
         "$HOME/bin/Rjrscript" "$TEST" "bench-Rsh/bench-$i.RDS" || break
       done
     ) > Rsh.log 2>&1
 
-    printf "  + context profile...\n"
-    mkdir "profile" &&
-    "$HOME/bin/Rmrscript" "$TEST" > Rm.log 2>&1
+    #printf "  + context profile...\n"
+    #mkdir "profile" &&
+    #"$HOME/bin/Rmrscript" "$TEST" > Rm.log 2>&1
   )
 }
 export -f process_test
