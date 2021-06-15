@@ -23,7 +23,7 @@ export -f process_dir
 
 echo "$SRC"
 find "$SRC" -name "R.log" -type f -print0 |
-  xargs -r0 -n1 bash -c 'process_dir "$@"' "xargs-sh"
+  xargs -P4 -r0 -n1 bash -c 'process_dir "$@"' "xargs-sh"
 
 #find "$SRC" -name 'R.log' -type f -print 0 |
   #xargs -r0 echo
