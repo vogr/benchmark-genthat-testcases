@@ -9,7 +9,7 @@ CRAN=normalizePath("../CRAN")
 
 options(genthat.source_paths=CRAN)
 options(genthat.debug=TRUE)
-options(genthat.keep_failed_tests=TRUE)
+options(genthat.keep_failed_tests=FALSE)
 options(genthat.keep_all_traces=FALSE)
 options(genthat.max_trace_size=getOption("genthat.max_trace_size", 512*1024))
 

@@ -5,8 +5,7 @@ library(ggplot2)
 library(purrr)
 library(tibble)
 
-N_BENCHMARKS=1000
-
+N_BENCHMARKS=20
 
 argv <- commandArgs(trailingOnly=TRUE)
 
@@ -18,8 +17,9 @@ if (length(argv) < 2) {
 base_directory <- argv[[1]]
 output <- argv[[2]]
 
-R_dir <- normalizePath(paste0(base_directory, "/bench-R"))
-Rsh_dir <- normalizePath(paste0(base_directory, "/bench-Rsh"))
+R_dir <- normalizePath(file.path(base_directory, "bench-R"))
+Rsh_dir <- normalizePath(file.path(base_directory, "bench-Rsh"))
+rir_dir <- normalizePath(file.path(base_directory, "bench-rir"))
 
 
 process_dir <- function(dir) {
@@ -53,13 +53,15 @@ process_dir <- function(dir) {
 df <- tibble(
   runtime_R=process_dir(R_dir),
   runtime_Rsh=process_dir(Rsh_dir),
+  runtime_rir=process_dir(rir_dir),
   it=1:length(runtime_R),
 )
 
 p <- ggplot(df, aes(x = it)) +
      scale_y_continuous(trans='log10') +
-     geom_line(aes(y=runtime_R, color="GNU R")) +
-     geom_line(aes(y=runtime_Rsh, color="Rsh")) +
+     geom_line(aes(y=runtime_R, color="GNU R")) + geom_point(aes(y=runtime_R, color="GNU R")) +
+     geom_line(aes(y=runtime_Rsh, color="Rsh")) + geom_point(aes(y=runtime_Rsh, color="Rsh")) +
+     geom_line(aes(y=runtime_rir, color="rir")) + geom_point(aes(y=runtime_rir, color="rir")) +
      #geom_col(aes(y=runtime_R, color="steelblue")) +
      #geom_col(aes(y=runtime_Rsh, color="darkred")) +
      labs(x = "Iteration", y = "Runtime (ms)", color="R version", title=base_directory)
