@@ -58,7 +58,7 @@ process_test() {
     TIMEFORMAT="  + benchmark Rsh RIR-only (%Rs)"
     time { (
       for ((i=1 ; i <= N_BENCHMARKS; i++)); do
-        PIR_ENABLE=false "$HOME/bin/Rjrscript" "$TEST" "bench-rir/bench-$i.RDS" || break
+        PIR_ENABLE=off "$HOME/bin/Rjrscript" "$TEST" "bench-rir/bench-$i.RDS" || break
       done
     ) > rir.log 2>&1
     overwrite ""
