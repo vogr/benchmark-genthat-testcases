@@ -8,7 +8,10 @@ cd "$CWD" || exit 1
 
 export R_LIBS="$HOME/.Renv/versions/3.6.2/lib/R/library"
 
-export N_BENCHMARKS=100
+export N_BENCHMARKS=1000
+
+overwrite() { printf "\r\033[1A\033[0K%s" "$@"; }
+export -f overwrite
 
 
 process_test() {
@@ -40,23 +43,29 @@ process_test() {
 
     printf "  + benchmark R...\n"
     mkdir -p bench-R &&
-    (
+    TIMEFORMAT="  + benchmark R (%Rs)"
+    time { (
       for ((i=1 ; i <= N_BENCHMARKS; i++)); do
         Rscript "$TEST" "bench-R/bench-$i.RDS" || break
       done
     ) > R.log 2>&1
+    overwrite ""
+    }
 
     printf "  + benchmark Rsh...\n"
     mkdir -p bench-Rsh &&
-    (
+    TIMEFORMAT="  + benchmark Rsh (%Rs)"
+    time { (
       for ((i=1 ; i <= N_BENCHMARKS; i++)); do
         "$HOME/bin/Rjrscript" "$TEST" "bench-Rsh/bench-$i.RDS" || break
       done
     ) > Rsh.log 2>&1
+    overwrite ""
+    }
 
-    #printf "  + context profile...\n"
-    #mkdir "profile" &&
-    #"$HOME/bin/Rmrscript" "$TEST" > Rm.log 2>&1
+    printf "  + context profile...\n"
+    mkdir "profile" &&
+    "$HOME/bin/Rmrscript" "$TEST" > Rm.log 2>&1
   )
 }
 export -f process_test

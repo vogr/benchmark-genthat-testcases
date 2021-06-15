@@ -17,7 +17,7 @@ package <- commandArgs(trailingOnly=TRUE)
 
 message("Generating tests for ", package)
 
-output_dir <- file.path("experiment", package)
+output_dir <- file.path("experiment")
 
 tests_file <- file.path(output_dir, "tests.RDS")
 tests_coverage_file <- file.path(output_dir, "coverage.RDS")

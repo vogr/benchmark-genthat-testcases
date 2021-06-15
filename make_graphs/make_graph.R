@@ -5,7 +5,7 @@ library(ggplot2)
 library(purrr)
 library(tibble)
 
-N_BENCHMARKS=100
+N_BENCHMARKS=1000
 
 
 argv <- commandArgs(trailingOnly=TRUE)
@@ -29,7 +29,7 @@ process_dir <- function(dir) {
     
     row_name <- paste0("run", i)
     # as ms
-    l[[row_name]] <- readRDS(fname) / 1000
+    l[[row_name]] <- readRDS(fname) * 1000
   }
 
 
@@ -57,9 +57,11 @@ df <- tibble(
 )
 
 p <- ggplot(df, aes(x = it)) +
-     geom_line(aes(y=runtime_R, color="steelblue")) +
-     geom_line(aes(y=runtime_Rsh, color="darkred")) +
-     labs(x = "Iteration", y = "Runtime (ms)") +
-     scale_y_continuous(trans='log10')
+     scale_y_continuous(trans='log10') +
+     geom_line(aes(y=runtime_R, color="GNU R")) +
+     geom_line(aes(y=runtime_Rsh, color="Rsh")) +
+     #geom_col(aes(y=runtime_R, color="steelblue")) +
+     #geom_col(aes(y=runtime_Rsh, color="darkred")) +
+     labs(x = "Iteration", y = "Runtime (ms)", color="R version", title=base_directory)
 
 ggsave(output, plot=p)
