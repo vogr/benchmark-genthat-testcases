@@ -6,9 +6,9 @@ set -u
 CWD="$(dirname "$(readlink -f "$0")")"
 cd "$CWD" || exit 1
 
-export R_LIBS="$HOME/.Renv/versions/3.6.2/lib/R/library"
+export R_LIBS="$(Rscript -e "cat(.libPaths())")"
 
-export N_BENCHMARKS=1000
+export N_BENCHMARKS=20
 
 overwrite() { printf "\r\033[1A\033[0K%s" "$@"; }
 export -f overwrite
@@ -39,6 +39,7 @@ process_test() {
     # Run the file:
     #   with R (for benchmark) x N_BENCHMARKS
     #   with Rjr (for benchmark) x N_BENCHMARKS
+    #   with Rrr (for benchmark) x N_BENCHMARKS
     #   with Rmr (for context logging)
 
     printf "  + benchmark R...\n"
@@ -49,6 +50,17 @@ process_test() {
         Rscript "$TEST" "bench-R/bench-$i.RDS" || break
       done
     ) > R.log 2>&1
+    overwrite ""
+    }
+
+    printf "  + benchmark Rsh RIR-only...\n"
+    mkdir -p bench-rir &&
+    TIMEFORMAT="  + benchmark Rsh RIR-only (%Rs)"
+    time { (
+      for ((i=1 ; i <= N_BENCHMARKS; i++)); do
+        PIR_ENABLE=false "$HOME/bin/Rjrscript" "$TEST" "bench-rir/bench-$i.RDS" || break
+      done
+    ) > rir.log 2>&1
     overwrite ""
     }
 
@@ -65,7 +77,11 @@ process_test() {
 
     printf "  + context profile...\n"
     mkdir "profile" &&
-    "$HOME/bin/Rmrscript" "$TEST" > Rm.log 2>&1
+    TIMEFORMAT="  + context profile (%Rs)"
+    time {
+    CONTEXT_LOGS=true "$HOME/bin/Rmrscript" "$TEST" > Rm.log 2>&1
+    overwrite ""
+    }
   )
 }
 export -f process_test
