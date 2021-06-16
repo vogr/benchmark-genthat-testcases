@@ -6,6 +6,9 @@ library(purrr)
 library(tibble)
 
 N_BENCHMARKS=20
+LOGSCALE=TRUE
+SKIP_WARMUP=FALSE
+
 
 argv <- commandArgs(trailingOnly=TRUE)
 
@@ -57,13 +60,22 @@ df <- tibble(
   it=1:length(runtime_R),
 )
 
+
+if (SKIP_WARMUP) {
+  df <- filter(df, it >= 10)
+}
+
 p <- ggplot(df, aes(x = it)) +
      scale_y_continuous(trans='log10') +
      geom_line(aes(y=runtime_R, color="GNU R")) + geom_point(aes(y=runtime_R, color="GNU R")) +
      geom_line(aes(y=runtime_Rsh, color="Rsh")) + geom_point(aes(y=runtime_Rsh, color="Rsh")) +
-     geom_line(aes(y=runtime_rir, color="rir")) + geom_point(aes(y=runtime_rir, color="rir")) +
+     geom_line(aes(y=runtime_rir, color="rir")) + geom_point(aes(y=runtime_rir, color="rir"))
      #geom_col(aes(y=runtime_R, color="steelblue")) +
      #geom_col(aes(y=runtime_Rsh, color="darkred")) +
-     labs(x = "Iteration", y = "Runtime (ms)", color="R version", title=base_directory)
+
+if (LOGSCALE) {
+  p <- p + labs(x = "Iteration", y = "Runtime (ms)", color="R version", title=base_directory)
+}
+
 
 ggsave(output, plot=p)
