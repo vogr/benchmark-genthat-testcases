@@ -8,19 +8,21 @@ library(covr)
 CRAN=normalizePath("../CRAN")
 
 options(genthat.source_paths=CRAN)
-options(genthat.debug=TRUE)
+options(genthat.debug=FALSE)
 options(genthat.keep_failed_tests=FALSE)
 options(genthat.keep_all_traces=FALSE)
 options(genthat.max_trace_size=getOption("genthat.max_trace_size", 512*1024))
 
 package <- commandArgs(trailingOnly=TRUE)
 
-message("Generating tests for ", package)
 
-output_dir <- file.path("experiment")
+output_dir <- normalizePath("experiment")
 
 #tests_file <- file.path(output_dir, "tests.RDS")
 #tests_coverage_file <- file.path(output_dir, "coverage.RDS")
+
+# running the tests sometimes creates files: go into a temporary directory
+setwd(tempdir())
 
 with_time <- function(expr) {
   time <- genthat:::stopwatch(result <- force(expr))
@@ -29,10 +31,11 @@ with_time <- function(expr) {
 }
 
 if (!file.exists(file.path(output_dir, package))) {
+  message("Generating tests for ", package)
   tests <- with_time(gen_from_package(package, types="all", action="generate", prune_tests=FALSE, output_dir=output_dir,quiet=FALSE))
   #saveRDS(tests, tests_file)
 } else {
-  message("\t Skipping: file exists")
+  message("Skipping package ", package, ": output directory exists")
 }
 
 #if (!file.exists(tests_coverage_file)) {
