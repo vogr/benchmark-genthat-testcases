@@ -10,9 +10,6 @@ export R_LIBS="$(Rscript -e "cat(.libPaths())")"
 
 export N_BENCHMARKS=20
 
-export -f overwrite
-
-
 process_test() {
   if [[ $1 =~ ^#.* ]]; then 
     return;
@@ -32,10 +29,11 @@ process_test() {
     printf "* Skipping %s\n" "$TEST"
     return
   else
+    mkdir -p "$DEST" &&
+    DEST="$(realpath "$DEST")"
     printf "* Test %s\n into %s\n" "$TEST" "$DEST"
   fi
 
-  mkdir -p "$DEST" &&
   (
     cd "$DEST" &&
 
