@@ -19,8 +19,8 @@ message("Generating tests for ", package)
 
 output_dir <- file.path("experiment")
 
-tests_file <- file.path(output_dir, "tests.RDS")
-tests_coverage_file <- file.path(output_dir, "coverage.RDS")
+#tests_file <- file.path(output_dir, "tests.RDS")
+#tests_coverage_file <- file.path(output_dir, "coverage.RDS")
 
 with_time <- function(expr) {
   time <- genthat:::stopwatch(result <- force(expr))
@@ -28,9 +28,11 @@ with_time <- function(expr) {
   result
 }
 
-if (!file.exists(tests_file)) {
+if (!file.exists(file.path(output_dir, package))) {
   tests <- with_time(gen_from_package(package, types="all", action="generate", prune_tests=FALSE, output_dir=output_dir,quiet=FALSE))
-  saveRDS(tests, tests_file)
+  #saveRDS(tests, tests_file)
+} else {
+  message("\t Skipping: file exists")
 }
 
 #if (!file.exists(tests_coverage_file)) {
