@@ -45,7 +45,7 @@ process_dir <- function(dir) {
 
   df <- as_tibble(m1)
 
-  means <- summarise_all(df, mean)
+  means <- df %>% summarise(across(starts_with("it"), mean))
 
   # Extract first row as double vector
   v <- as.numeric(means[1,])
