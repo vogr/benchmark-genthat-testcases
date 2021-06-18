@@ -5,7 +5,7 @@ library(ggplot2)
 library(purrr)
 library(tibble)
 
-N_BENCHMARKS=20
+N_BENCHMARKS=3
 LOGSCALE=TRUE
 SKIP_WARMUP=FALSE
 

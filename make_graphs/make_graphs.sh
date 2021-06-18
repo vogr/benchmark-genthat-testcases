@@ -14,8 +14,14 @@ process_dir () {
   DEST_DIR="graphs/$REL"
   DEST="$DEST_DIR/runtimes.pdf"
 
+
+  if [[ ! -f "$DIR/DATA_READY" ]]; then
+    printf "Skip: Not ready %s\n" "$DIR"
+    return
+  fi
+
   if [[ -d "$DEST_DIR" ]]; then
-    printf "Skipping %s\n" "$DIR"
+    printf "Skip: Already processed %s\n" "$DIR"
     return
   else
     printf "Processing %s ...\n" "$DIR"
