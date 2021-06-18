@@ -8,7 +8,8 @@ cd "$CWD" || exit 1
 
 export R_LIBS="$(Rscript -e "cat(.libPaths())")"
 
-export N_BENCHMARKS=20
+export N_BENCHMARKS=3
+export TIMEOUT=10
 
 process_test() {
   if [[ $1 =~ ^#.* ]]; then 
@@ -54,7 +55,8 @@ process_test() {
     {
       time {
         for ((i=1 ; i <= N_BENCHMARKS; i++)); do
-          Rscript "$TEST" "bench-R/bench-$i.RDS" || break
+          timeout "$TIMEOUT" Rscript "$TEST" "bench-R/bench-$i.RDS" ||
+            { echo "R" >> FAILED && break; }
         done
       } > R.log 2>&1
     } >> "$LOG" 2>&1
@@ -64,7 +66,8 @@ process_test() {
     {
       time {
         for ((i=1 ; i <= N_BENCHMARKS; i++)); do
-          PIR_ENABLE=off "$HOME/bin/Rjrscript" "$TEST" "bench-rir/bench-$i.RDS" || break
+          PIR_ENABLE=off timeout "$TIMEOUT" "$HOME/bin/Rjrscript" "$TEST" "bench-rir/bench-$i.RDS" ||
+            { echo "rir" >> FAILED && break; }
         done
       } > rir.log 2>&1
     } >> "$LOG" 2>&1
@@ -74,7 +77,8 @@ process_test() {
     {
       time {
         for ((i=1 ; i <= N_BENCHMARKS; i++)); do
-          "$HOME/bin/Rjrscript" "$TEST" "bench-Rsh/bench-$i.RDS" || break
+          timeout "$TIMEOUT" "$HOME/bin/Rjrscript" "$TEST" "bench-Rsh/bench-$i.RDS" ||
+            { echo "Rsh" >> FAILED && break; }
         done
       } > Rsh.log 2>&1
     } >> "$LOG" 2>&1
@@ -83,9 +87,16 @@ process_test() {
     mkdir -p "profile" &&
     {
       time {
-      CONTEXT_LOGS=true "$HOME/bin/Rmrscript" "$TEST" > Rm.log 2>&1
+      {
+        CONTEXT_LOGS=true timeout "$TIMEOUT" "$HOME/bin/Rmrscript" "$TEST" ||
+          echo "Rsh+context profile" >> FAILED
+      } > Rm.log 2>&1
       }
     } >> "$LOG" 2>&1
+
+    if [[ ! -f FAILED ]]; then
+      touch DATA_READY
+    fi
   )
 }
 export -f process_test
@@ -102,6 +113,6 @@ process_pkg () {
 }
 export -f process_pkg
 
-xargs -P8 -r -n1 bash -c 'process_pkg "$@"' _ < packages.txt
+xargs -P16 -r -n1 bash -c 'process_pkg "$@"' _ < packages.txt
 
 printf "Done\n" > /dev/stderr
