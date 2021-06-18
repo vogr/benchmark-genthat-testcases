@@ -38,7 +38,7 @@ with_time <- function(expr) {
 
 if (!file.exists(file.path(output_dir, package))) {
   message("Generating tests for ", package)
-  tests <- with_time(gen_from_package(package, types="all", action="generate", prune_tests=FALSE, output_dir=output_dir,quiet=TRUE))
+  tests <- with_time(gen_from_package(package, types="all", action="generate", prune_tests=TRUE, output_dir=output_dir,quiet=TRUE))
   #saveRDS(tests, tests_file)
 } else {
   message("Skipping package ", package, ": output directory exists")
