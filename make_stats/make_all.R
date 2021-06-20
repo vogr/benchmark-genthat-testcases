@@ -1,6 +1,12 @@
 #!/usr/bin/env Rscript
 
+# fread and fwrite are faster than their equivalent in readr
+# data.table::rbindlist is faster than tibble::bind_rows
+# This makes data.table a much better fit for this simple task
+
+
 library(data.table)
+library(tibble)
 
 TESTS_DIR <- "../runtests/tests"
 #TESTS_DIR <- "devel"
@@ -19,6 +25,8 @@ read_and_prepare <- function(d) {
   classes <- c("character", "character", "character", "integer", "integer", "double")
   dt <- fread(file=file.path(d, "profile", "compile_stats.csv"), header=TRUE, colClasses=classes)
   dt <- data.table(test_pkg=test_pkg, test_fun=test_fun, test_fname=test_fname, dt)
+  # update success into a boolean var
+  dt[, SUCCESS := as.logical(SUCCESS)]
   dt
 }
 
@@ -26,4 +34,5 @@ read_and_prepare <- function(d) {
 df <- rbindlist(lapply(data_ready_dirs, read_and_prepare))
 
 fwrite(df, file="all.csv")
-saveRDS(df, file="all.RDS", compress=FALSE)
+#saveRDS(df, file="all_dt.RDS", compress=FALSE)
+saveRDS(as_tibble(df), file="all_tbl.RDS", compress=FALSE)
