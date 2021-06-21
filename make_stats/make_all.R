@@ -34,5 +34,5 @@ read_and_prepare <- function(d) {
 df <- rbindlist(lapply(data_ready_dirs, read_and_prepare))
 
 fwrite(df, file="all.csv")
-#saveRDS(df, file="all_dt.RDS", compress=FALSE)
+saveRDS(df, file="all_dt.RDS", compress=FALSE)
 saveRDS(as_tibble(df), file="all_tbl.RDS", compress=FALSE)
