@@ -5,14 +5,20 @@ CWD="$(dirname "$(readlink -f "$0")")"
 cd "$CWD" || exit 1
 
 export SRC="$(realpath "../runtests/tests")"
+export DEST_DIR="graphs/"
 
+mkdir -p "$DEST_DIR"
 
 process_dir () {
   DIR="$(dirname "$(realpath "$1")")"
 
   REL="$(realpath --relative-to="$SRC" "$DIR")"
-  DEST_DIR="graphs/$REL"
-  DEST="$DEST_DIR/runtimes.pdf"
+
+  TEST="$(basename "$DIR")"
+  FUN="$(basename "$(dirname "$DIR")")"
+  PKG="$(basename "$(dirname "$(dirname "$DIR")")")"
+
+  DEST="$DEST_DIR/$PKG::${FUN}__$TEST.pdf"
 
 
   if [[ ! -f "$DIR/DATA_READY" ]]; then
@@ -20,7 +26,7 @@ process_dir () {
     return
   fi
 
-  if [[ -d "$DEST_DIR" ]]; then
+  if [[ -f "$DEST" ]]; then
     printf "Skip: Already processed %s\n" "$DIR"
     return
   else
