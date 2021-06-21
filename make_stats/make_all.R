@@ -9,7 +9,8 @@ library(data.table)
 library(tibble)
 
 TESTS_DIR <- "../runtests/tests"
-#TESTS_DIR <- "devel"
+
+dir.create("data")
 
 data_ready_dirs <- normalizePath(dirname(dir(TESTS_DIR, pattern = "DATA_READY", recursive=TRUE, full.names=TRUE)))
 
@@ -33,6 +34,6 @@ read_and_prepare <- function(d) {
 # Bind all csv.s together
 df <- rbindlist(lapply(data_ready_dirs, read_and_prepare))
 
-fwrite(df, file="all.csv")
-saveRDS(df, file="all_dt.RDS", compress=FALSE)
-saveRDS(as_tibble(df), file="all_tbl.RDS", compress=FALSE)
+fwrite(df, file="data/all.csv")
+saveRDS(df, file="data/all_dt.RDS", compress=FALSE)
+saveRDS(as_tibble(df), file="data/all_tbl.RDS", compress=FALSE)
