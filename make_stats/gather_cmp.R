@@ -10,11 +10,14 @@ library(tibble)
 
 TESTS_DIR <- "../runtests/tests"
 
-dir.create("data")
+if (!dir.exists(data))
+  dir.create("data")
+
+message("Find compilation data")
 
 data_ready_dirs <- normalizePath(dirname(dir(TESTS_DIR, pattern = "DATA_READY", recursive=TRUE, full.names=TRUE)))
 
-message("Merge data from ", length(data_ready_dirs), " test runs.")
+message("Merge compilation data from ", length(data_ready_dirs), " test runs.")
 
 read_and_prepare <- function(d) {
 
@@ -37,3 +40,4 @@ df <- rbindlist(lapply(data_ready_dirs, read_and_prepare))
 fwrite(df, file="data/all.csv")
 saveRDS(df, file="data/all_dt.RDS", compress=FALSE)
 saveRDS(as_tibble(df), file="data/all_tbl.RDS", compress=FALSE)
+
