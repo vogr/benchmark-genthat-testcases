@@ -49,6 +49,6 @@ all_rows_dt <- lapply(all_rows, function(x) rbindlist(x, fill=TRUE))
 df <- rbindlist(all_rows_dt, fill=TRUE)
 
 fwrite(df, file="data/runtimes.csv")
-#saveRDS(df, file="data/all_dt.RDS", compress=FALSE)
-#saveRDS(as_tibble(df), file="data/all_tbl.RDS", compress=FALSE)
+saveRDS(df, file="data/runtime_dt.RDS", compress=FALSE)
+saveRDS(as_tibble(df), file="data/runtime_tbl.RDS", compress=FALSE)
 

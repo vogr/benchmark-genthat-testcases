@@ -37,7 +37,7 @@ read_and_prepare <- function(d) {
 # Bind all csv.s together
 df <- rbindlist(lapply(data_ready_dirs, read_and_prepare))
 
-fwrite(df, file="data/all.csv")
-saveRDS(df, file="data/all_dt.RDS", compress=FALSE)
-saveRDS(as_tibble(df), file="data/all_tbl.RDS", compress=FALSE)
+fwrite(df, file="data/cmp.csv")
+saveRDS(df, file="data/cmp_dt.RDS", compress=FALSE)
+saveRDS(as_tibble(df), file="data/cmp_tbl.RDS", compress=FALSE)
 
