@@ -10,10 +10,10 @@ library(tibble)
 
 TESTS_DIR <- "../runtests/tests"
 
-if (!dir.exists(data))
+if (!dir.exists("data"))
   dir.create("data")
 
-message("Find compilation data")
+message("Find data dirs")
 
 data_ready_dirs <- normalizePath(dirname(dir(TESTS_DIR, pattern = "DATA_READY", recursive=TRUE, full.names=TRUE)))
 

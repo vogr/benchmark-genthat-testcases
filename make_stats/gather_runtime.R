@@ -34,21 +34,19 @@ read_and_prepare <- function(d) {
     b <- benches[[i]]
     bench <- basename(b)
     lang <- basename(dirname(b))
-    bench_id <- list(bench=bench, lang=lang)
+    bench_id <- list(lang=lang, bench=bench)
     
     times <- readRDS(b)
 
     rows[[i]] <- c(test_id, bench_id, times)
   }
-  rows
+  rbindlist(rows, fill=TRUE)
 }
 
 # Bind all csv.s together
-all_rows <- lapply(data_ready_dirs, read_and_prepare)
-all_rows_dt <- lapply(all_rows, function(x) rbindlist(x, fill=TRUE))
-df <- rbindlist(all_rows_dt, fill=TRUE)
+df <- rbindlist(lapply(data_ready_dirs, read_and_prepare), fill=TRUE)
 
 fwrite(df, file="data/runtimes.csv")
-saveRDS(df, file="data/runtime_dt.RDS", compress=FALSE)
-saveRDS(as_tibble(df), file="data/runtime_tbl.RDS", compress=FALSE)
+saveRDS(df, file="data/runtimes_dt.RDS", compress=FALSE)
+saveRDS(as_tibble(df), file="data/runtimes_tbl.RDS", compress=FALSE)
 
