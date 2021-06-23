@@ -9,7 +9,8 @@ cd "$CWD" || exit 1
 export R_LIBS="$(Rscript -e "cat(.libPaths())")"
 
 export N_BENCHMARKS=3
-export TIMEOUT=10
+export TIMEOUT=200
+export SKIP_FAILED=false
 
 process_test() {
   if [[ $1 =~ ^#.* ]]; then 
@@ -26,14 +27,26 @@ process_test() {
   TREE="${TEST_REL%.*}"
   DEST="tests/$PKG_NAME/$TREE"
 
-  if [[ -d "$DEST" ]]; then
-    printf "* Skipping %s\n" "$TEST"
+  if [[ -f "$DEST/DATA_READY" ]]; then
+    printf "* Already processed %s\n" "$TEST"
     return
-  else
-    mkdir -p "$DEST" &&
-    DEST="$(realpath "$DEST")"
-    printf "* Test %s\n into %s\n" "$TEST" "$DEST"
   fi
+
+  if [[ "$SKIP_FAILED" = "true" && -f "$DEST/FAILED" ]]; then
+    printf "Skipping failed test\n"
+    return;
+  fi
+
+  mkdir -p "$DEST" &&
+  DEST="$(realpath "$DEST")"
+
+  printf "* Test %s\n into %s\n" "$TEST" "$DEST"
+
+  if [[ -f "$DEST/FAILED" ]]; then
+    printf "   (resetting failed status)\n"
+    rm "$DEST/FAILED"
+  fi
+
 
   (
     cd "$DEST" &&
