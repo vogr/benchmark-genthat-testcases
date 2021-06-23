@@ -33,7 +33,8 @@ read_and_prepare <- function(d) {
   for(i in seq_along(benches)) {
     b <- benches[[i]]
     bench <- basename(b)
-    lang <- basename(dirname(b))
+    # drop the "bench-" in front
+    lang <- substring(basename(dirname(b)), 7)
     bench_id <- list(lang=lang, bench=bench)
     
     times <- readRDS(b)
