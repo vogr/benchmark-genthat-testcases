@@ -37,7 +37,19 @@ read_and_prepare <- function(d) {
 # Bind all csv.s together
 df <- rbindlist(lapply(data_ready_dirs, read_and_prepare))
 
-fwrite(df, file="data/cmp.csv")
-saveRDS(df, file="data/cmp_dt.RDS", compress=FALSE)
-saveRDS(as_tibble(df), file="data/cmp_tbl.RDS", compress=FALSE)
+
+write_all <- function(df, dest) {
+  message("Write ", dest, " to disk")
+  message("   + csv")
+  fwrite(df, file=paste0("data/", dest, ".csv"))
+  message("   + data.table")
+  saveRDS(df, file=paste0("data/",dest,"_dt.RDS"), compress=FALSE)
+  message("   + tibble")
+  saveRDS(as_tibble(df), file=paste0("data/", dest, "_tbl.RDS"), compress=FALSE)
+}
+
+
+write_all(df, "cmp")
+write_all(df[1:2000], "cmp_small")
+write_all(df[1:100000], "cmp_med")
 
