@@ -44,11 +44,18 @@ read_and_prepare <- function(d) {
     # rbindlist will convert l to a data.table, no need to do it explicitly now 
     rows[[i]] <- l
   }
-  rbindlist(rows)
+  # return list of lists
+  rows
 }
 
-# Bind all csv.s together
-df <- rbindlist(lapply(data_ready_dirs, read_and_prepare), fill=TRUE)
+load_all <- function() {
+  # Create list of list for every dir and concatenate them
+  l <- do.call(c, lapply(data_ready_dirs, read_and_prepare))
+  # Convert list of list to a data.table
+   rbindlist(l)
+}
+
+df <- load_all()
 
 write_all <- function(df, dest) {
   message("Write ", dest, " to disk")
