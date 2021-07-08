@@ -57,6 +57,8 @@ message("Recompilation")
 recompilation <- df %>% filter(SUCCESS == TRUE) %>%
     group_by(test_pkg,test_fun,test_fname,ID,NAME,VERSION) %>%
     summarise(n_cmp=max(ID_CMP), avg_cmp_time=mean(CMP_TIME), max_cmp_time=max(CMP_TIME)) %>%
+    group_by(test_pkg,test_fun,test_fname) %>%
+    slice_max(n=1, order_by=n_cmp,with_ties=FALSE) %>%
     arrange(desc(n_cmp), test_pkg, test_fun, test_fname)
 
 write_lazy(recompilation, "analysis/recompilation.csv")
