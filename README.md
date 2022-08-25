@@ -1,5 +1,12 @@
 # Benchmarking genthat testcases
 
+## Presentation
+
+Coverage based generation of benchmarks from a corpus of input programs; profiling and visualization of the resulting executions for Ř, R the JIT compiler for R.
+
+View [the slides](report/slides.pdf) and [the report](report/report.pdf).
+
+
 ## Prerequisites
 
 ### R and Ř
